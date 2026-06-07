@@ -133,15 +133,7 @@ The `data.json.example` template includes pre-configured test accounts using exa
 | admin@example.com | Admin | Admin123! | Email-based 2FA, Standard user modification |
 | user@example.com | Standard | Standard123! | Email-based 2FA, Cryptography and Integrity operations |
 
----
 
----
-
----
-
----
-
----
 
 *Note: Passwords are hashed in data.json. For lab purposes, password policies require:*
 
