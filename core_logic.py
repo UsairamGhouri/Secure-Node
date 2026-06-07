@@ -135,6 +135,25 @@ def send_account_modified_email(target_email, changes_description, modified_by="
     """
     return _send_email(target_email, 'SECURE NODE | Account Security Alert', text, html)
 
+def send_forgot_password_otp(target_email, otp):
+    text = f"SECURE NODE ALERTS\nYour Password Reset OTP is: {otp}\nDo not share this code."
+    html = f"""
+    <html>
+      <body style="background-color: #162423; color: #9cd1d1; font-family: 'Courier New', monospace; padding: 40px; margin: 0; text-align: center;">
+        <div style="background-color: #1a2b2a; padding: 30px; border: 1px solid #2a4040; border-radius: 8px; max-width: 500px; margin: 0 auto;">
+          <h2 style="color: #eb8282; border-bottom: 1px dashed #2a4040; padding-bottom: 10px; margin-top: 0; letter-spacing: 2px;">PASSWORD RESET</h2>
+          <p style="color: #6a9c9c; font-size: 14px;">A password reset request was initiated for your account.</p>
+          <div style="background-color: #111c1b; border: 1px solid #2a4040; padding: 20px; margin: 30px 0;">
+            <span style="font-size: 12px; color: #6a9c9c; display: block; margin-bottom: 10px;">PASSWORD RESET OTP:</span>
+            <strong style="color: #fff; font-size: 32px; letter-spacing: 8px;">{otp}</strong>
+          </div>
+          <p style="font-size: 12px; color: #555;">Do not share this code. If you did not request this, contact your System Administrator immediately.</p>
+        </div>
+      </body>
+    </html>
+    """
+    return _send_email(target_email, 'SECURE NODE | Password Reset Verification', text, html)
+
 def encrypt_log_entry(log_entry):
     try:
         f = Fernet(LOG_ENCRYPTION_KEY.encode())

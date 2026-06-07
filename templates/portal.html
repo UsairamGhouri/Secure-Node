@@ -24,7 +24,17 @@
 </head>
 <body>
     <div class="header">
-        <div><strong>NODE: ACTIVE</strong> | ENTITY: <span>{{ email }}</span> | CLEARANCE: <span style="color:#eb8282;">{{ role }}</span></div>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <div class="nav-back-home" style="display: flex; gap: 12px; align-items: center; margin-right: 5px;">
+                <a href="javascript:history.back()" title="Back" style="color: #eb8282; text-decoration: none; display: flex; align-items: center; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                </a>
+                <a href="/" title="Home" style="color: #eb8282; text-decoration: none; display: flex; align-items: center; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                </a>
+            </div>
+            <div><strong>NODE: ACTIVE</strong> | ENTITY: <span>{{ email }}</span> | CLEARANCE: <span style="color:#eb8282;">{{ role }}</span></div>
+        </div>
         <div>
             {% if role in ['Admin', 'Superadmin'] %}<a href="/admin" class="btn" style="border-color:#9cd1d1; color:#9cd1d1;">Admin</a>{% endif %}
             <a href="/vault" class="btn" style="border-color:#f0c674; color:#f0c674;">Secure Vault</a>

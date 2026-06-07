@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, R
 import requests
 import core_logic
 import os
+import hashlib
 from flask_wtf.csrf import CSRFProtect
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -9,7 +10,7 @@ from flask_limiter.util import get_remote_address
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'dev-key-change-in-production')
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
-app.config['SESSION_COOKIE_SECURE'] = True
+app.config['SESSION_COOKIE_SECURE'] = False
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 csrf = CSRFProtect(app)
@@ -105,6 +106,65 @@ def verify_2fa():
                 core_logic.log_security_event(session['pending_email'], "AUTH_2FA", "FAILED", "Incorrect OTP")
     return render_template('2fa.html', error=error, delivery_method=delivery_method)
 
+@app.route('/forgot-password', methods=['GET', 'POST'])
+@limiter.limit("5 per minute")
+def forgot_password():
+    error = None
+    if request.method == 'POST':
+        email = core_logic.sanitize_input(request.form['email'])
+        db = core_logic.load_db()
+        if email not in db:
+            core_logic.log_security_event(email, "FORGOT_PASS_REQ", "FAILED", "Non-registered email entered")
+            error = "Identity not found. Please verify spelling."
+        elif db[email]['role'] == 'Superadmin':
+            core_logic.log_security_event(email, "FORGOT_PASS_REQ", "DENIED", "Reset attempted for Superadmin entity")
+            error = "Password reset is not permitted for Superadmin entities."
+        else:
+            otp = core_logic.generate_otp()
+            session['reset_email'] = email
+            session['reset_otp'] = otp
+            success, msg = core_logic.send_forgot_password_otp(email, otp)
+            if success:
+                core_logic.log_security_event(email, "FORGOT_PASS_REQ", "SUCCESS", "Reset OTP dispatched via SMTP.")
+            else:
+                print(f"\n[SMTP FAILED - FALLBACK] Password Reset OTP for {email}: {otp}\n")
+                core_logic.log_security_event(email, "FORGOT_PASS_REQ", "SUCCESS", f"SMTP error ({msg}), fallback to console log")
+            return redirect(url_for('reset_password'))
+    return render_template('forgot-password.html', error=error)
+
+@app.route('/reset-password', methods=['GET', 'POST'])
+@limiter.limit("5 per minute")
+def reset_password():
+    if 'reset_email' not in session or 'reset_otp' not in session:
+        return redirect(url_for('forgot_password'))
+    error = None
+    if request.method == 'POST':
+        otp = request.form.get('otp', '')
+        new_password = request.form.get('new_password', '')
+        confirm_password = request.form.get('confirm_password', '')
+        
+        if otp != session['reset_otp']:
+            core_logic.log_security_event(session['reset_email'], "PASS_RESET", "FAILED", "Incorrect OTP code entered")
+            error = "Invalid reset OTP code."
+        elif new_password != confirm_password:
+            error = "Passwords do not match."
+        elif not core_logic.validate_password(new_password):
+            core_logic.log_security_event(session['reset_email'], "PASS_RESET", "FAILED", "Proposed password failed complexity checks")
+            error = "Password must be at least 8 characters long, and contain uppercase, lowercase, and numeric characters."
+        else:
+            email = session['reset_email']
+            db = core_logic.load_db()
+            if email in db:
+                db[email]['password_hash'] = hashlib.sha256(new_password.encode()).hexdigest()
+                core_logic.save_db(db)
+                core_logic.log_security_event(email, "PASS_RESET", "SUCCESS", "Password reset successfully via OTP verification")
+                session.pop('reset_email', None)
+                session.pop('reset_otp', None)
+                return redirect(url_for('login'))
+            else:
+                error = "An error occurred. User database out of sync."
+    return render_template('reset-password.html', error=error)
+
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():
     if session.get('role') not in ['Admin', 'Superadmin']: return redirect(url_for('portal'))
@@ -123,13 +183,33 @@ def edit(target):
     if session.get('role') not in ['Admin', 'Superadmin']: return redirect(url_for('portal'))
     db = core_logic.get_all_users()
     if target not in db: return redirect(url_for('admin'))
-    if session['role'] == 'Admin' and db[target]['role'] in ['Admin', 'Superadmin']: return redirect(url_for('admin'))
-    if db[target]['role'] == 'Superadmin' and target != session['email']: return redirect(url_for('admin'))
+    
+    # Access control enforcement
+    if session['role'] == 'Admin':
+        if target != session['email'] and db[target]['role'] != 'Standard':
+            return redirect(url_for('admin'))
+    elif session['role'] == 'Superadmin':
+        if target != session['email'] and db[target]['role'] == 'Superadmin':
+            return redirect(url_for('admin'))
+            
     msg = msg_color = None
     if request.method == 'POST':
         edit_email = core_logic.sanitize_input(request.form['edit_email'])
         edit_password = request.form['edit_password']
         edit_role = core_logic.sanitize_input(request.form['edit_role'])
+        
+        # Prevent privilege escalation and demotions
+        if session['role'] == 'Admin':
+            if target != session['email'] and edit_role != 'Standard':
+                return redirect(url_for('admin'))
+            if target == session['email'] and edit_role not in ['Admin', 'Standard']:
+                return redirect(url_for('admin'))
+        elif session['role'] == 'Superadmin':
+            if target != session['email'] and edit_role == 'Superadmin':
+                return redirect(url_for('admin'))
+            if target == session['email'] and edit_role != 'Superadmin':
+                return redirect(url_for('admin'))
+                
         success, response_msg = core_logic.update_user(target, edit_email, edit_password, edit_role, modified_by=session.get('email', 'Unknown'))
         if success:
             core_logic.log_security_event(session['email'], "MODIFY", "SUCCESS", f"Updated: {target}")
