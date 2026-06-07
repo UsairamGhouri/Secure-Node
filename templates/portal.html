@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SECURE NODE | PORTAL</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #162423; color: #9cd1d1; font-family: 'Fira Code', monospace; margin: 0; padding: 40px; }
+        .header { display: flex; justify-content: space-between; border-bottom: 1px solid #2a4040; padding-bottom: 20px; margin-bottom: 30px; }
+        a.btn { background-color: transparent; border: 1px solid #eb8282; color: #eb8282; padding: 8px 16px; text-decoration: none; border-radius: 4px; margin-right: 10px;}
+        a.btn:hover { background-color: rgba(235, 130, 130, 0.1); }
+        .container { display: flex; gap: 30px; max-width: 1200px; margin: 0 auto; flex-wrap: wrap; }
+        .panel { background-color: #1a2b2a; padding: 30px; border: 1px solid #2a4040; border-radius: 8px; flex: 1; min-width: 400px; }
+        h3 { color: #eb8282; margin-top: 0; margin-bottom: 20px; border-bottom: 1px dashed #2a4040; padding-bottom: 10px;}
+        textarea, input[type="text"], input[type="file"] { width: 100%; background-color: #162423; border: 1px solid #2a4040; color: #9cd1d1; padding: 12px; box-sizing: border-box; font-family: inherit; margin-bottom: 15px; }
+        textarea { height: 80px; resize: vertical; }
+        button { background-color: #9cd1d1; color: #162423; border: none; padding: 12px 24px; cursor: pointer; font-weight: bold; font-family: inherit; border-radius: 4px; width: 100%; margin-bottom: 20px;}
+        button:hover { background-color: #b0e0e0; }
+        .output { background-color: #111c1b; padding: 15px; border: 1px solid #2a4040; word-wrap: break-word; font-size: 0.9em; margin-bottom: 10px;}
+        .verify-success { color: #9cd1d1; text-align: center; font-weight: bold; font-size: 1.1em; margin-top: 20px; }
+        .verify-error { color: #eb8282; text-align: center; font-weight: bold; font-size: 1.1em; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div><strong>NODE: ACTIVE</strong> | ENTITY: <span>{{ email }}</span> | CLEARANCE: <span style="color:#eb8282;">{{ role }}</span></div>
+        <div>
+            {% if role in ['Admin', 'Superadmin'] %}<a href="/admin" class="btn" style="border-color:#9cd1d1; color:#9cd1d1;">Admin</a>{% endif %}
+            <a href="/vault" class="btn" style="border-color:#f0c674; color:#f0c674;">Secure Vault</a>
+            <a href="/logout" class="btn">Terminate</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="panel">
+            <h3>TEXT CRYPTOGRAPHY (AES)</h3>
+            <form method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="action" value="encrypt">
+                <textarea name="message" required placeholder="Enter Plaintext Data..."></textarea>
+                <button type="submit">GENERATE CIPHER</button>
+            </form>
+            {% if enc_data %}
+            <div class="output">
+                <strong style="color:#eb8282">KEY (SAVE THIS):</strong> <br>{{ enc_data.key }}<br><br>
+                <strong>CIPHERTEXT:</strong> <br>{{ enc_data.cipher }}
+            </div>
+            {% endif %}
+
+            <form method="POST" style="margin-top: 20px;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="action" value="decrypt">
+                <textarea name="cipher_text" required placeholder="Enter Ciphertext..."></textarea>
+                <input type="text" name="aes_key" required placeholder="Enter AES Key..." autocomplete="off">
+                <button type="submit" style="background-color: #f0c674;">DECRYPT PAYLOAD</button>
+            </form>
+            {% if dec_data %}<div class="output" style="color:#fff;"><strong>RECOVERED:</strong> <br>{{ dec_data }}</div>{% endif %}
+        </div>
+
+        <div class="panel">
+            <h3>FILE INTEGRITY ENGINE (SHA-256)</h3>
+            <form method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="action" value="hash_file">
+                <label style="font-size: 0.85em; color: #6a9c9c; display: block; margin-bottom: 5px;">Upload File to Generate Signature:</label>
+                <input type="file" name="file_input" required>
+                <button type="submit">DOWNLOAD .SHA256 SIGNATURE</button>
+            </form>
+
+            <form method="POST" enctype="multipart/form-data" style="margin-top: 30px;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="action" value="verify_file">
+                <label style="font-size: 0.85em; color: #6a9c9c; display: block; margin-bottom: 5px;">1. Upload Target File:</label>
+                <input type="file" name="verify_file_input" required>
+                
+                <label style="font-size: 0.85em; color: #6a9c9c; display: block; margin-bottom: 5px;">2. Upload .sha256 Signature File:</label>
+                <input type="file" name="signature_file" required>
+                <button type="submit" style="background-color: #eb8282; color: #162423;">VERIFY INTEGRITY</button>
+            </form>
+            {% if file_verify %}<div class="output {% if file_verify.color == '#eb8282' %}verify-error{% else %}verify-success{% endif %}">{{ file_verify.status }}</div>{% endif %}
+        </div>
+    </div>
+</body>
+</html>

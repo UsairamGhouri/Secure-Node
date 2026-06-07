@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SECURE NODE | ADMIN</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #162423; color: #9cd1d1; font-family: 'Fira Code', monospace; margin: 0; padding: 40px; }
+        .header { display: flex; justify-content: space-between; border-bottom: 1px solid #2a4040; padding-bottom: 20px; margin-bottom: 30px; }
+        a.btn { background-color: transparent; border: 1px solid #eb8282; color: #eb8282; padding: 8px 16px; text-decoration: none; border-radius: 4px; margin-right: 10px; }
+        a.btn:hover { background-color: rgba(235, 130, 130, 0.1); }
+        .container { display: flex; gap: 40px; flex-wrap: wrap; }
+        .panel { background-color: #1a2b2a; padding: 20px; border: 1px solid #2a4040; border-radius: 8px; flex: 1; min-width: 300px; }
+        .full-width { flex: 100%; }
+        h3 { color: #eb8282; margin-top: 0; border-bottom: 1px dashed #2a4040; padding-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { text-align: left; padding: 10px; border-bottom: 1px solid #2a4040; font-size: 0.9em; }
+        .delete-btn { color: #ff6666; text-decoration: none;} .edit-btn { color: #f0c674; text-decoration: none; margin-right: 10px;}
+        input, select, button { width: 100%; padding: 12px; margin-bottom: 15px; background-color: #162423; border: 1px solid #2a4040; color: #9cd1d1; font-family: inherit; box-sizing: border-box; }
+        button { background-color: #9cd1d1; color: #162423; font-weight: bold; cursor: pointer; border: none; }
+        button:hover { background-color: #b0e0e0; }
+        
+        /* The Minimal, Compelling Log UI */
+        .log-console { background-color: #0d1414; border: 1px solid #2a4040; padding: 15px; border-radius: 4px; height: 300px; overflow-y: auto; font-size: 0.8em; }
+        .log-entry { margin-bottom: 8px; font-family: 'Courier New', monospace; }
+        .log-time { color: #555; }
+        .log-email { color: #6a9c9c; }
+        .log-event { color: #f0c674; }
+        .status-SUCCESS { color: #a8cc8c; font-weight: bold; }
+        .status-FAILED { color: #eb8282; font-weight: bold; background-color: rgba(235,130,130,0.1); padding: 0 4px; }
+        .status-INFO { color: #9cd1d1; font-weight: bold; }
+        .status-TERMINATED { color: #555; font-weight: bold; }
+        .status-WARNING { color: #f0c674; font-weight: bold; }
+        .msg-success { color: #9cd1d1; margin-bottom: 15px; }
+        .msg-error { color: #eb8282; margin-bottom: 15px; }
+        .role-superadmin { color: #c586c0; }
+        .role-admin { color: #eb8282; }
+        .role-standard { color: #9cd1d1; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div><strong>ADMINISTRATION DASHBOARD</strong> | Access Control Module</div>
+        <div>
+            <a href="/portal" class="btn" style="border-color:#9cd1d1; color:#9cd1d1;">Crypto Engine</a>
+            <a href="/vault" class="btn" style="border-color:#f0c674; color:#f0c674;">Secure Vault</a>
+            <a href="/logout" class="btn">Terminate</a>
+        </div>
+    </div>
+    <div class="container">
+        <div class="panel" style="flex: 2;">
+            <h3>Active Directory</h3>
+            <table>
+                <tr><th>Identity</th><th>Clearance</th><th>Action</th></tr>
+                {% for email, data in users.items() %}
+                <tr>
+                    <td>{{ email }}</td>
+                    <td class="role-{{ data.role|lower }}">{{ data.role }}</td>
+                    <td>
+                        {% if (session.role == 'Superadmin' and email != session.email) or (session.role == 'Admin' and data.role == 'Standard') %}
+                            <a href="/edit/{{ email }}" class="edit-btn">[Modify]</a>
+                            {% if data.role != 'Superadmin' %}<a href="/delete/{{ email }}" class="delete-btn">[Drop]</a>{% endif %}
+                        {% else %}<span style="color:#555;">[Restricted]</span>{% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div class="panel">
+            <h3>Provision Entity</h3>
+            {% if msg %}<div class="{% if msg_color == '#eb8282' %}msg-error{% else %}msg-success{% endif %}">{{ msg }}</div>{% endif %}
+            <form method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="text" name="new_email" placeholder="Email (@gmail.com)" required autocomplete="off">
+                <input type="password" name="new_password" placeholder="Passphrase" required>
+                <select name="new_role">
+                    <option value="Standard">Standard</option>
+                    {% if session.role == 'Superadmin' %}<option value="Admin">Admin</option>{% endif %}
+                </select>
+                <button type="submit">Establish Access</button>
+            </form>
+        </div>
+        
+        <div class="panel full-width">
+            <h3>THREAT DETECTION: Live Audit Telemetry</h3>
+            <div class="log-console" id="logBox">
+                {% for log in logs %}
+                    <div class="log-entry">
+                        <span class="log-time">{{ log.time }}</span> | 
+                        <span class="log-email">{{ log.email }}</span> | 
+                        <span class="log-event">{{ log.event }}</span> | 
+                        <span class="status-{{ log.status }}">[{{ log.status }}]</span> | 
+                        <span>{{ log.details }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <script>
+        // Auto-scroll logs to bottom
+        var logBox = document.getElementById("logBox");
+        logBox.scrollTop = logBox.scrollHeight;
+    </script>
+</body>
+</html>

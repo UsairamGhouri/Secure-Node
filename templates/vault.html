@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SECURE NODE | VAULT</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #162423; color: #9cd1d1; font-family: 'Fira Code', monospace; margin: 0; padding: 40px; }
+        .header { display: flex; justify-content: space-between; border-bottom: 1px solid #2a4040; padding-bottom: 20px; margin-bottom: 30px; }
+        a.btn { background-color: transparent; border: 1px solid #eb8282; color: #eb8282; padding: 8px 16px; text-decoration: none; border-radius: 4px; margin-right: 10px; }
+        a.btn:hover { background-color: rgba(235, 130, 130, 0.1); }
+        .panel { background-color: #1a2b2a; padding: 30px; border: 1px solid #2a4040; border-radius: 8px; max-width: 900px; margin: 0 auto; }
+        h3 { color: #f0c674; margin-top: 0; border-bottom: 1px dashed #2a4040; padding-bottom: 10px; }
+        .file-grid { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+        .file-card { background-color: #111c1b; border: 1px solid #2a4040; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .file-info h4 { margin: 0 0 5px 0; color: #fff; }
+        .file-info p { margin: 0; font-size: 0.85em; color: #6a9c9c; }
+        .req-clearance { font-size: 0.8em; padding: 3px 8px; border-radius: 3px; background-color: rgba(235, 130, 130, 0.1); color: #eb8282; border: 1px solid #eb8282;}
+        button { background-color: #9cd1d1; color: #162423; border: none; padding: 8px 16px; cursor: pointer; font-weight: bold; font-family: inherit; border-radius: 4px; }
+        button:hover { background-color: #b0e0e0; }
+        .msg { margin-bottom: 20px; padding: 15px; background-color: #0d1414; border: 1px solid #2a4040; font-weight: bold; text-align: center; }
+        .msg-success { color: #9cd1d1; }
+        .msg-error { color: #eb8282; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div><strong>NODE: ACTIVE</strong> | ENTITY: <span>{{ email }}</span> | CLEARANCE: <span style="color:#eb8282;">{{ role }}</span></div>
+        <div>
+            {% if role in ['Admin', 'Superadmin'] %}<a href="/admin" class="btn" style="border-color:#9cd1d1; color:#9cd1d1;">Admin</a>{% endif %}
+            <a href="/portal" class="btn" style="border-color:#9cd1d1; color:#9cd1d1;">Crypto Engine</a>
+            <a href="/logout" class="btn">Terminate</a>
+        </div>
+    </div>
+    
+    <div class="panel">
+        <h3>SECURE VAULT: File Access Control Matrix</h3>
+        <p style="font-size: 0.9em; color:#6a9c9c; margin-bottom: 20px;">The system evaluates your current clearance level against the classification of the requested asset.</p>
+        
+        {% if msg %}<div class="msg {% if msg_color == '#eb8282' %}msg-error{% else %}msg-success{% endif %}">{{ msg }}</div>{% endif %}
+
+        <div class="file-grid">
+            {% for file in vault %}
+            <div class="file-card">
+                <div class="file-info">
+                    <h4>{{ file.name }}</h4>
+                    <p>{{ file.desc }}</p>
+                </div>
+                <div style="text-align: right;">
+                    <div class="req-clearance" style="margin-bottom: 10px;">Requires: {{ file.clearance }}</div>
+                    <form method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="clearance" value="{{ file.clearance }}">
+                        <input type="hidden" name="file_name" value="{{ file.name }}">
+                        <button type="submit">REQUEST ACCESS</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

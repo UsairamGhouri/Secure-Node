@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service - Secure Node</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #162423; color: #9cd1d1; font-family: 'Fira Code', monospace; margin: 0; padding: 40px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .header-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2a4040; padding-bottom: 20px; margin-bottom: 30px; }
+        .header-bar a { color: #eb8282; text-decoration: none; border: 1px solid #eb8282; padding: 8px 16px; border-radius: 4px; font-size: 0.85em; transition: 0.3s; }
+        .header-bar a:hover { background-color: rgba(235, 130, 130, 0.1); }
+        h1 { color: #eb8282; font-size: 1.6em; margin: 0 0 5px 0; letter-spacing: 1px; }
+        .last-updated { color: #555; font-size: 0.8em; margin-bottom: 30px; }
+        h2 { color: #f0c674; font-size: 1.1em; margin-top: 35px; margin-bottom: 15px; border-bottom: 1px dashed #2a4040; padding-bottom: 8px; }
+        p { color: #6a9c9c; line-height: 1.8; margin-bottom: 15px; font-size: 0.9em; }
+        ul { margin-left: 20px; margin-bottom: 15px; }
+        li { color: #6a9c9c; margin-bottom: 8px; line-height: 1.6; font-size: 0.9em; }
+        li::marker { color: #eb8282; }
+        .highlight { background-color: #1a2b2a; border: 1px solid #2a4040; padding: 15px; border-radius: 6px; margin: 15px 0; }
+        .highlight p { margin: 0; }
+        .warning-box { background-color: rgba(235, 130, 130, 0.08); border: 1px solid rgba(235, 130, 130, 0.3); padding: 15px; border-radius: 6px; margin: 15px 0; }
+        .warning-box p { color: #eb8282; margin: 0; font-size: 0.85em; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-bar">
+            <div>
+                <h1>TERMS OF SERVICE</h1>
+                <p class="last-updated">Last Updated: June 6, 2026</p>
+            </div>
+            <a href="/">← Back to Home</a>
+        </div>
+
+        <h2>1. Acceptance of Terms</h2>
+        <p>By accessing or using the Secure Node application ("Service"), you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, you may not access or use the Service.</p>
+
+        <h2>2. Educational Purpose</h2>
+        <div class="highlight">
+            <p>Secure Node is an <strong style="color: #fff;">educational project</strong> designed to demonstrate cybersecurity concepts including cryptography, access control, multi-factor authentication, and threat detection. It is intended for academic and learning purposes only.</p>
+        </div>
+
+        <h2>3. Account Responsibilities</h2>
+        <p>When using the Service, you agree to:</p>
+        <ul>
+            <li>Provide accurate and complete information during account registration</li>
+            <li>Maintain the confidentiality of your login credentials and backup codes</li>
+            <li>Immediately notify an administrator of any unauthorized use of your account</li>
+            <li>Not share your OTP codes, backup codes, or encryption keys with unauthorized parties</li>
+            <li>Use strong passwords meeting the minimum requirements (8+ characters, uppercase, lowercase, digit)</li>
+        </ul>
+
+        <h2>4. Acceptable Use Policy</h2>
+        <p>You may use the Service only for lawful, educational purposes. You agree not to:</p>
+        <ul>
+            <li>Attempt to gain unauthorized access to other accounts or system components</li>
+            <li>Upload malicious files to the integrity verification engine</li>
+            <li>Attempt to bypass rate limiting, CSRF protection, or other security controls</li>
+            <li>Use the Service to harass, threaten, or harm others</li>
+            <li>Reverse-engineer, decompile, or attempt to extract the source code of the Service</li>
+        </ul>
+
+        <h2>5. Role-Based Access</h2>
+        <p>The Service implements a three-tier role-based access control (RBAC) system:</p>
+        <ul>
+            <li><strong style="color: #9cd1d1;">Standard</strong> — Basic access to cryptographic operations and file integrity tools</li>
+            <li><strong style="color: #eb8282;">Admin</strong> — User management and audit logs</li>
+            <li><strong style="color: #c586c0;">Superadmin</strong> — Administrative user management with console-only 2FA delivery and full administrative control over Admin entities</li>
+        </ul>
+        <p>Users must not attempt to escalate their privileges beyond their assigned clearance level.</p>
+
+        <h2>6. Data Handling</h2>
+        <p>All data processed through the Service (encrypted text, file hashes, vault files) is handled according to our Privacy Policy. You acknowledge that:</p>
+        <ul>
+            <li>Encrypted data generated through the portal uses Fernet (AES-128-CBC) symmetric encryption</li>
+            <li>File hashes are generated using SHA-256 and are non-reversible</li>
+            <li>All security events are logged and may be reviewed by administrators</li>
+            <li>Session data is stored in secure, HTTP-only cookies</li>
+        </ul>
+
+        <h2>7. Intellectual Property</h2>
+        <p>The Service and its original content, features, and functionality are owned by the Secure Node development team and are protected by applicable intellectual property laws. The source code is provided under the terms specified in the project LICENSE file.</p>
+
+        <h2>8. Limitation of Liability</h2>
+        <p>The Service is provided "as is" without warranties of any kind. The development team shall not be liable for any damages arising from:</p>
+        <ul>
+            <li>Use or inability to use the Service</li>
+            <li>Unauthorized access to your data</li>
+            <li>Loss of data processed through the encryption or hashing tools</li>
+            <li>Any third-party actions or services integrated with the platform</li>
+        </ul>
+
+        <h2>9. Termination</h2>
+        <p>We reserve the right to terminate or suspend access to the Service at any time, without prior notice, for any reason including violation of these Terms. Upon termination, your right to use the Service will immediately cease.</p>
+
+        <h2>10. Changes to Terms</h2>
+        <p>We reserve the right to modify these Terms at any time. Continued use of the Service after changes constitutes acceptance of the modified Terms.</p>
+
+        <h2>11. Contact</h2>
+        <p>For questions about these Terms, contact us at: <strong style="color: #fff;">legal@securenode.local</strong></p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - Secure Node</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #162423; color: #9cd1d1; font-family: 'Fira Code', monospace; margin: 0; padding: 40px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .header-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2a4040; padding-bottom: 20px; margin-bottom: 30px; }
+        .header-bar a { color: #eb8282; text-decoration: none; border: 1px solid #eb8282; padding: 8px 16px; border-radius: 4px; font-size: 0.85em; transition: 0.3s; }
+        .header-bar a:hover { background-color: rgba(235, 130, 130, 0.1); }
+        h1 { color: #eb8282; font-size: 1.6em; margin: 0 0 5px 0; letter-spacing: 1px; }
+        .last-updated { color: #555; font-size: 0.8em; margin-bottom: 30px; }
+        h2 { color: #f0c674; font-size: 1.1em; margin-top: 35px; margin-bottom: 15px; border-bottom: 1px dashed #2a4040; padding-bottom: 8px; }
+        h3 { color: #9cd1d1; font-size: 0.95em; margin-top: 20px; margin-bottom: 10px; }
+        p { color: #6a9c9c; line-height: 1.8; margin-bottom: 15px; font-size: 0.9em; }
+        ul { margin-left: 20px; margin-bottom: 15px; }
+        li { color: #6a9c9c; margin-bottom: 8px; line-height: 1.6; font-size: 0.9em; }
+        li::marker { color: #eb8282; }
+        .highlight { background-color: #1a2b2a; border: 1px solid #2a4040; padding: 15px; border-radius: 6px; margin: 15px 0; }
+        .highlight p { margin: 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-bar">
+            <div>
+                <h1>PRIVACY POLICY</h1>
+                <p class="last-updated">Last Updated: June 6, 2026</p>
+            </div>
+            <a href="/">← Back to Home</a>
+        </div>
+
+        <h2>1. Introduction</h2>
+        <p>Secure Node ("we," "us," "our," or "Company") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our web application.</p>
+
+        <h2>2. Information We Collect</h2>
+        <h3>Account Information</h3>
+        <ul>
+            <li>Email address</li>
+            <li>Password (hashed with SHA-256)</li>
+            <li>Role and access level</li>
+            <li>Account creation and modification dates</li>
+        </ul>
+
+        <h3>Activity Logs</h3>
+        <ul>
+            <li>Login/logout events</li>
+            <li>File access records</li>
+            <li>Security operations performed</li>
+            <li>Timestamp and IP address of activities</li>
+        </ul>
+
+        <h3>Technical Data</h3>
+        <ul>
+            <li>IP address and device information</li>
+            <li>Browser type and version</li>
+            <li>Session identifiers</li>
+        </ul>
+
+        <h2>3. How We Use Your Information</h2>
+        <p>We use your information for the following purposes:</p>
+        <ul>
+            <li>Authentication and account management</li>
+            <li>Audit logging and compliance monitoring</li>
+            <li>Security threat detection and prevention</li>
+            <li>User support and communication</li>
+            <li>Performance optimization and analytics</li>
+            <li>Legal and regulatory compliance</li>
+        </ul>
+
+        <h2>4. Data Security</h2>
+        <div class="highlight">
+            <p>We implement comprehensive security measures to protect your data:</p>
+        </div>
+        <ul>
+            <li>AES-128 encryption (Fernet) for sensitive data</li>
+            <li>SHA-256 hashing for password storage</li>
+            <li>CSRF protection on all state-changing operations</li>
+            <li>Secure HTTP-only cookies with SameSite policy</li>
+            <li>Rate limiting to prevent abuse</li>
+            <li>Content Security Policy (CSP) headers</li>
+            <li>Encrypted audit log storage</li>
+        </ul>
+
+        <h2>5. Data Retention</h2>
+        <p>We retain your information for as long as necessary to provide our services and comply with legal obligations. Audit logs are retained for a minimum of 90 days for security compliance purposes.</p>
+
+        <h2>6. Third-Party Services</h2>
+        <p>Our application may integrate with third-party services such as Google Drive for file storage and SMTP servers for email delivery. We do not share your personal information with third parties without your explicit consent, except as required by law.</p>
+
+        <h2>7. User Rights</h2>
+        <p>You have the right to:</p>
+        <ul>
+            <li>Access your personal data</li>
+            <li>Request correction of inaccurate data</li>
+            <li>Request deletion of your account and associated data</li>
+            <li>Export your data in standard formats</li>
+            <li>Withdraw consent at any time</li>
+        </ul>
+
+        <h2>8. Changes to This Policy</h2>
+        <p>We may update this Privacy Policy periodically. We will notify you of significant changes by posting the new policy on this page and updating the "Last Updated" date.</p>
+
+        <h2>9. Contact Us</h2>
+        <p>For privacy-related inquiries, please contact us at: <strong style="color: #fff;">privacy@securenode.local</strong></p>
+    </div>
+</body>
+</html>

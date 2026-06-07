@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SECURE NODE | 2FA</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #162423; color: #9cd1d1; font-family: 'Fira Code', monospace; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .box { background-color: #1a2b2a; padding: 40px; border: 1px solid #2a4040; border-radius: 8px; width: 340px; text-align: center; }
+        h2 { color: #eb8282; margin-top: 0; border-bottom: 1px dashed #2a4040; padding-bottom: 10px; }
+        p { font-size: 0.85em; color: #6a9c9c; margin-bottom: 20px; line-height: 1.4;}
+        input { width: 100%; padding: 12px; margin-bottom: 20px; background-color: #162423; border: 1px solid #2a4040; color: #fff; font-family: inherit; font-size: 1.2em; text-align: center; letter-spacing: 5px; box-sizing: border-box; }
+        input:focus { outline: none; border-color: #9cd1d1; }
+        button { width: 100%; padding: 12px; background-color: #9cd1d1; color: #162423; border: none; font-weight: bold; font-family: inherit; cursor: pointer; border-radius: 4px; }
+        button:hover { background-color: #b0e0e0; }
+        .error { color: #ff6666; font-size: 0.85em; margin-top: 15px; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 8px; background-color: transparent; border: 1px solid #2a4040; color: #9cd1d1; cursor: pointer; border-radius: 4px; }
+        .tab-btn.active { background-color: #eb8282; color: #162423; border-color: #eb8282; }
+        .tab-btn:hover { background-color: rgba(235, 130, 130, 0.2); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>2FA REQUIRED</h2>
+        <p>A One-Time Password has been transmitted to your:<br><strong style="color: #f0c674;">{{ delivery_method }}</strong></p>
+
+        <div class="tabs">
+            <button type="button" class="tab-btn active" onclick="switchTab('otp')">OTP</button>
+            <button type="button" class="tab-btn" onclick="switchTab('backup')">BACKUP CODE</button>
+        </div>
+
+        <div id="otp" class="tab-content active">
+            <form method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="text" name="otp" placeholder="••••••" autocomplete="off" maxlength="6">
+                <button type="submit">VERIFY IDENTITY</button>
+            </form>
+        </div>
+
+        <div id="backup" class="tab-content">
+            <form method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="auth_method" value="backup">
+                <input type="text" name="backup_code" placeholder="XXXXXXXX" autocomplete="off" style="letter-spacing: 3px;">
+                <button type="submit">VERIFY WITH BACKUP CODE</button>
+            </form>
+        </div>
+
+        {% if error %}<div class="error">{{ error }}</div>{% endif %}
+    </div>
+
+    <script>
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tab).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

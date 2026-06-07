@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Rounded dark-teal background container -->
+  <rect width="100" height="100" rx="20" fill="#162423" />
+  <!-- Lock shackle (coral/red accent color) -->
+  <path d="M30 45 V32 A20 20 0 0 1 70 32 V45" fill="none" stroke="#eb8282" stroke-width="8" stroke-linecap="round" />
+  <!-- Lock body (light teal primary color) -->
+  <rect x="20" y="45" width="60" height="42" rx="8" fill="#9cd1d1" />
+  <!-- Keyhole (dark teal background cutout) -->
+  <circle cx="50" cy="61" r="6" fill="#162423" />
+  <path d="M47 61 H53 L55 76 H45 Z" fill="#162423" />
+</svg>

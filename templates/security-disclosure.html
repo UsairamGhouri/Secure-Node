@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Disclosure - Secure Node</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #162423; color: #9cd1d1; font-family: 'Fira Code', monospace; margin: 0; padding: 40px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .header-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2a4040; padding-bottom: 20px; margin-bottom: 30px; }
+        .header-bar a { color: #eb8282; text-decoration: none; border: 1px solid #eb8282; padding: 8px 16px; border-radius: 4px; font-size: 0.85em; transition: 0.3s; }
+        .header-bar a:hover { background-color: rgba(235, 130, 130, 0.1); }
+        h1 { color: #eb8282; font-size: 1.6em; margin: 0 0 5px 0; letter-spacing: 1px; }
+        .last-updated { color: #555; font-size: 0.8em; margin-bottom: 30px; }
+        h2 { color: #f0c674; font-size: 1.1em; margin-top: 35px; margin-bottom: 15px; border-bottom: 1px dashed #2a4040; padding-bottom: 8px; }
+        h3 { color: #9cd1d1; font-size: 0.95em; margin-top: 20px; margin-bottom: 10px; }
+        p { color: #6a9c9c; line-height: 1.8; margin-bottom: 15px; font-size: 0.9em; }
+        ul { margin-left: 20px; margin-bottom: 15px; }
+        li { color: #6a9c9c; margin-bottom: 8px; line-height: 1.6; font-size: 0.9em; }
+        li::marker { color: #eb8282; }
+        .highlight { background-color: #1a2b2a; border: 1px solid #2a4040; padding: 15px; border-radius: 6px; margin: 15px 0; }
+        .highlight p { margin: 0; }
+        .safe-harbor { background-color: rgba(168, 204, 140, 0.08); border: 1px solid rgba(168, 204, 140, 0.3); padding: 20px; border-radius: 6px; margin: 20px 0; }
+        .safe-harbor h3 { color: #a8cc8c; margin-top: 0; }
+        .safe-harbor p { color: #a8cc8c; }
+        .severity-table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        .severity-table th, .severity-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #2a4040; font-size: 0.85em; }
+        .severity-table th { color: #f0c674; }
+        .severity-critical { color: #eb8282; font-weight: bold; }
+        .severity-high { color: #f0c674; font-weight: bold; }
+        .severity-medium { color: #9cd1d1; font-weight: bold; }
+        .severity-low { color: #6a9c9c; }
+        .contact-box { background-color: #111c1b; border: 1px solid #2a4040; padding: 20px; border-radius: 6px; margin: 15px 0; text-align: center; }
+        .contact-box p { color: #fff; font-size: 1em; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-bar">
+            <div>
+                <h1>SECURITY DISCLOSURE</h1>
+                <p class="last-updated">Responsible Disclosure Policy</p>
+            </div>
+            <a href="/">← Back to Home</a>
+        </div>
+
+        <h2>1. Our Commitment</h2>
+        <p>The Secure Node team takes security seriously. We value the contributions of security researchers and the broader community in helping us maintain the safety and integrity of our platform. This policy outlines how to responsibly disclose security vulnerabilities.</p>
+
+        <h2>2. How to Report a Vulnerability</h2>
+        <p>If you discover a security vulnerability, please report it responsibly:</p>
+        <div class="contact-box">
+            <p>📧 Report vulnerabilities to: <strong style="color: #eb8282;">security@securenode.local</strong></p>
+        </div>
+        <p>When reporting, please include:</p>
+        <ul>
+            <li>A detailed description of the vulnerability</li>
+            <li>Steps to reproduce the issue</li>
+            <li>Potential impact assessment</li>
+            <li>Any proof-of-concept code (if applicable)</li>
+            <li>Your contact information for follow-up</li>
+        </ul>
+
+        <h2>3. Scope</h2>
+        <h3>In Scope</h3>
+        <ul>
+            <li>Authentication bypass or privilege escalation</li>
+            <li>Cross-Site Scripting (XSS)</li>
+            <li>SQL Injection</li>
+            <li>Cross-Site Request Forgery (CSRF) bypass</li>
+            <li>Session hijacking or fixation</li>
+            <li>Insecure cryptographic implementations</li>
+            <li>Information disclosure of sensitive data</li>
+            <li>Remote code execution</li>
+            <li>Server-Side Request Forgery (SSRF)</li>
+        </ul>
+
+        <h3>Out of Scope</h3>
+        <ul>
+            <li>Denial of service attacks (rate limiting is already implemented)</li>
+            <li>Social engineering attacks</li>
+            <li>Physical security vulnerabilities</li>
+            <li>Issues in third-party dependencies with no practical exploit</li>
+            <li>Missing security headers on non-sensitive pages</li>
+        </ul>
+
+        <h2>4. Severity Classification</h2>
+        <table class="severity-table">
+            <tr>
+                <th>Severity</th>
+                <th>Description</th>
+                <th>Response Time</th>
+            </tr>
+            <tr>
+                <td class="severity-critical">CRITICAL</td>
+                <td>RCE, auth bypass, data breach</td>
+                <td>24 hours</td>
+            </tr>
+            <tr>
+                <td class="severity-high">HIGH</td>
+                <td>Privilege escalation, XSS, CSRF bypass</td>
+                <td>48 hours</td>
+            </tr>
+            <tr>
+                <td class="severity-medium">MEDIUM</td>
+                <td>Information disclosure, session issues</td>
+                <td>5 business days</td>
+            </tr>
+            <tr>
+                <td class="severity-low">LOW</td>
+                <td>Minor info leaks, best practice violations</td>
+                <td>10 business days</td>
+            </tr>
+        </table>
+
+        <h2>5. Safe Harbor</h2>
+        <div class="safe-harbor">
+            <h3>🛡 Safe Harbor Statement</h3>
+            <p>We consider security research conducted in accordance with this policy to be authorized, lawful, helpful, and welcome. We will not initiate legal action against researchers who:</p>
+        </div>
+        <ul>
+            <li>Make a good faith effort to avoid privacy violations, data destruction, and service disruption</li>
+            <li>Only interact with accounts they own or with explicit permission</li>
+            <li>Do not exploit vulnerabilities beyond what is necessary for the report</li>
+            <li>Report vulnerabilities promptly and do not publicly disclose before remediation</li>
+            <li>Do not use automated scanning tools that generate excessive traffic</li>
+        </ul>
+
+        <h2>6. Disclosure Timeline</h2>
+        <ul>
+            <li><strong style="color: #fff;">Day 0:</strong> Vulnerability reported</li>
+            <li><strong style="color: #fff;">Day 1-2:</strong> Acknowledgment sent to researcher</li>
+            <li><strong style="color: #fff;">Day 3-7:</strong> Vulnerability assessed and triaged</li>
+            <li><strong style="color: #fff;">Day 7-30:</strong> Fix developed and tested</li>
+            <li><strong style="color: #fff;">Day 30-90:</strong> Public disclosure (coordinated with researcher)</li>
+        </ul>
+
+        <h2>7. Recognition</h2>
+        <p>We believe in recognizing the contributions of security researchers. With your permission, we will:</p>
+        <ul>
+            <li>Credit you in our security advisories</li>
+            <li>Add your name to our Security Hall of Fame (if applicable)</li>
+            <li>Provide a reference letter for academic or professional purposes</li>
+        </ul>
+
+        <h2>8. Contact</h2>
+        <p>For security-related communications: <strong style="color: #fff;">security@securenode.local</strong></p>
+        <p>For general inquiries: <strong style="color: #fff;">mr.knight4837@gmail.com</strong></p>
+    </div>
+</body>
+</html>

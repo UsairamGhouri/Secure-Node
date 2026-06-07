@@ -1,0 +1,34 @@
+# Environment variables & secrets
+.env
+.log_key
+data.json
+
+# Application runtime logs
+*.log
+security.log
+
+# Python cache & compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# IDE configurations
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+*.swo
+
+# OS temporary files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,40 @@
+{
+    "superadmin@example.com": {
+        "password_hash": "9d5f4937087babebad4c86bfa44bd4d95f991e3a237b9e43c5487f0ba5fafd0f",
+        "role": "Superadmin"
+    },
+    "admin@example.com": {
+        "password_hash": "3eb3fe66b31e3b4d10fa70b5cad49c7112294af6ae4e476a1c405155d45aa121",
+        "role": "Admin",
+        "backup_codes": [
+            "02ee46133c09e823d38e92cecf8af1da62273277e8e6f46545668a78d23cccda",
+            "9de873970e0ecab5f212031dd0dd5c06997a3ed9e0ce6b6e8047169b77593603",
+            "530797c37bcca0c826f80ae6c70f940097ab85f428f712e08deca197a5210b0c",
+            "3c71adf7012620211e31ee0109e702f10fff9f0ddd49ec6315c64017b65421b9",
+            "b93e93e95903c474332a52b24c942c45327f6c4fa95bb6a1868d451aedcdf122",
+            "a690921a15df7d5d070fd3773eec6f1e63f725445547aeaf9758bd9feb10cd75",
+            "4cdecbf8bdf88cf41492ad0fdd64381e5b9d8cb007f176d2daa2044be6f65eee",
+            "a5c7a499bc51f1ccb1f8839093f3ac20d6fd9145cf9596358a350d0ebe4318a2",
+            "2160244650943b01c0e9a67181cb95da698a4bc8074c9c556ffa3a41f8ecfe1c",
+            "9bef257ab05367eb54ba72df9677ad2ddb42bd9830194cc40f28ba0eeeb3ad90"
+        ],
+        "backup_codes_used": []
+    },
+    "user@example.com": {
+        "password_hash": "4ea844713e07d64cc51d9f5f09af13859e4462b07c4fdc5d5fe810b502644622",
+        "role": "Standard",
+        "backup_codes": [
+            "02ee46133c09e823d38e92cecf8af1da62273277e8e6f46545668a78d23cccda",
+            "9de873970e0ecab5f212031dd0dd5c06997a3ed9e0ce6b6e8047169b77593603",
+            "530797c37bcca0c826f80ae6c70f940097ab85f428f712e08deca197a5210b0c",
+            "3c71adf7012620211e31ee0109e702f10fff9f0ddd49ec6315c64017b65421b9",
+            "b93e93e95903c474332a52b24c942c45327f6c4fa95bb6a1868d451aedcdf122",
+            "a690921a15df7d5d070fd3773eec6f1e63f725445547aeaf9758bd9feb10cd75",
+            "4cdecbf8bdf88cf41492ad0fdd64381e5b9d8cb007f176d2daa2044be6f65eee",
+            "a5c7a499bc51f1ccb1f8839093f3ac20d6fd9145cf9596358a350d0ebe4318a2",
+            "2160244650943b01c0e9a67181cb95da698a4bc8074c9c556ffa3a41f8ecfe1c",
+            "9bef257ab05367eb54ba72df9677ad2ddb42bd9830194cc40f28ba0eeeb3ad90"
+        ],
+        "backup_codes_used": []
+    }
+}
