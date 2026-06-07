@@ -238,7 +238,64 @@
             particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animate);
         }
         animate();
+        
+        function copyCommand() {
+            const commandText = "git clone https://github.com/UsairamGhouri/Secure-Node.git && cd Secure-Node";
+            navigator.clipboard.writeText(commandText).then(() => {
+                const btn = document.getElementById('copy-btn');
+                btn.textContent = 'Copied!';
+                btn.style.color = '#fff';
+                btn.style.borderColor = '#eb8282';
+                setTimeout(() => {
+                    btn.textContent = 'Copy';
+                    btn.style.color = '#9cd1d1';
+                    btn.style.borderColor = '#2a4040';
+                }, 2000);
+            });
+        }
     </script>
+
+    <div class="section" id="get-started" style="min-height: auto; padding: 80px 40px 100px;">
+        <div style="background-color: #1a2b2a; border: 1px solid #2a4040; border-radius: 12px; padding: 50px 40px; max-width: 900px; width: 100%; box-shadow: 0 15px 40px rgba(0,0,0,0.4); text-align: center; box-sizing: border-box; transition: border-color 0.3s;" onmouseover="this.style.borderColor='#eb8282'" onmouseout="this.style.borderColor='#2a4040'">
+            <div style="color: #eb8282; font-size: 0.9em; font-weight: bold; letter-spacing: 2px; margin-bottom: 25px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <span>&gt;_</span> GET STARTED
+            </div>
+            
+            <h2 style="font-size: 2.2em; color: #fff; margin: 0 0 15px 0; font-family: inherit;">Deploy the defense.</h2>
+            
+            <p style="color: #6a9c9c; font-size: 0.95em; max-width: 700px; margin: 0 auto 35px; line-height: 1.6;">
+                Self-host your cryptographic vaults, enforce multi-factor authentication, and secure your logs. No external servers, no telemetry, no hidden backdoors.
+            </p>
+            
+            <div style="background-color: #111c1b; border: 1px solid #2a4040; border-radius: 8px; padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; max-width: 750px; margin: 0 auto 30px; box-sizing: border-box; gap: 15px;">
+                <code id="clone-cmd" style="color: #9cd1d1; font-family: 'Fira Code', monospace; font-size: 0.85em; text-align: left; overflow-x: auto; white-space: nowrap; flex-grow: 1; padding-right: 10px;">
+                    <span style="color: #eb8282;">$</span> git clone https://github.com/UsairamGhouri/Secure-Node.git && cd Secure-Node
+                </code>
+                <button onclick="copyCommand()" id="copy-btn" style="background-color: #1a2b2a; border: 1px solid #2a4040; color: #9cd1d1; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 0.85em; transition: all 0.2s; white-space: nowrap;" onmouseover="this.style.borderColor='#eb8282'; this.style.backgroundColor='#162423'" onmouseout="this.style.borderColor='#2a4040'; this.style.backgroundColor='#1a2b2a'">
+                    Copy
+                </button>
+            </div>
+            
+            <div style="margin-bottom: 35px;">
+                <a href="https://github.com/UsairamGhouri/Secure-Node" target="_blank" class="btn-primary" style="display: inline-block; padding: 14px 32px; font-size: 1em; letter-spacing: 0.5px;">
+                    View on GitHub
+                </a>
+            </div>
+            
+            <p style="color: #6a9c9c; font-size: 0.85em; margin: 0 auto 40px auto; text-align: center; max-width: 600px;">
+                ⭐ <a href="https://github.com/UsairamGhouri/Secure-Node" target="_blank" style="color: #eb8282; text-decoration: none; font-weight: bold; border-bottom: 1px dashed rgba(235, 130, 130, 0.4); padding-bottom: 2px; transition: color 0.2s;" onmouseover="this.style.color='#ff9999'" onmouseout="this.style.color='#eb8282'">Star this repo</a> if you find it interesting.
+            </p>
+            
+            <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                <span style="border: 1px solid #2a4040; border-radius: 20px; padding: 6px 16px; font-size: 0.8em; color: #6a9c9c; background-color: rgba(26, 43, 42, 0.5); transition: all 0.3s; cursor: default;" onmouseover="this.style.borderColor='#eb8282'; this.style.color='#fff'" onmouseout="this.style.borderColor='#2a4040'; this.style.color='#6a9c9c'">100% Self-Hosted</span>
+                <span style="border: 1px solid #2a4040; border-radius: 20px; padding: 6px 16px; font-size: 0.8em; color: #6a9c9c; background-color: rgba(26, 43, 42, 0.5); transition: all 0.3s; cursor: default;" onmouseover="this.style.borderColor='#eb8282'; this.style.color='#fff'" onmouseout="this.style.borderColor='#2a4040'; this.style.color='#6a9c9c'">Zero External Calls</span>
+                <span style="border: 1px solid #2a4040; border-radius: 20px; padding: 6px 16px; font-size: 0.8em; color: #6a9c9c; background-color: rgba(26, 43, 42, 0.5); transition: all 0.3s; cursor: default;" onmouseover="this.style.borderColor='#eb8282'; this.style.color='#fff'" onmouseout="this.style.borderColor='#2a4040'; this.style.color='#6a9c9c'">Local Cryptography</span>
+                <span style="border: 1px solid #2a4040; border-radius: 20px; padding: 6px 16px; font-size: 0.8em; color: #6a9c9c; background-color: rgba(26, 43, 42, 0.5); transition: all 0.3s; cursor: default;" onmouseover="this.style.borderColor='#eb8282'; this.style.color='#fff'" onmouseout="this.style.borderColor='#2a4040'; this.style.color='#6a9c9c'">Strict RBAC Policies</span>
+                <span style="border: 1px solid #2a4040; border-radius: 20px; padding: 6px 16px; font-size: 0.8em; color: #6a9c9c; background-color: rgba(26, 43, 42, 0.5); transition: all 0.3s; cursor: default;" onmouseover="this.style.borderColor='#eb8282'; this.style.color='#fff'" onmouseout="this.style.borderColor='#2a4040'; this.style.color='#6a9c9c'">AES-128 Fernet</span>
+                <span style="border: 1px solid #2a4040; border-radius: 20px; padding: 6px 16px; font-size: 0.8em; color: #6a9c9c; background-color: rgba(26, 43, 42, 0.5); transition: all 0.3s; cursor: default;" onmouseover="this.style.borderColor='#eb8282'; this.style.color='#fff'" onmouseout="this.style.borderColor='#2a4040'; this.style.color='#6a9c9c'">2FA Verification</span>
+            </div>
+        </div>
+    </div>
 
     <footer class="footer">
         <div class="footer-content">
@@ -248,6 +305,7 @@
                     <li><a href="/login" class="footer-link">Access Portal</a></li>
                     <li><a href="#architecture" class="footer-link">View Architecture</a></li>
                     <li><a href="#team" class="footer-link">Meet The Team</a></li>
+                    <li><a href="#get-started" class="footer-link">Get Started</a></li>
                 </ul>
             </div>
 
