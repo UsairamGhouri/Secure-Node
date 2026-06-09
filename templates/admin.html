@@ -17,6 +17,24 @@
         table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         th, td { text-align: left; padding: 10px; border-bottom: 1px solid #2a4040; font-size: 0.9em; }
         .delete-btn { color: #ff6666; text-decoration: none;} .edit-btn { color: #f0c674; text-decoration: none; margin-right: 10px;}
+        .gen-btn {
+            width: auto;
+            padding: 0;
+            margin: 0;
+            margin-bottom: 0;
+            background: none;
+            border: none;
+            color: #a8cc8c;
+            font-family: inherit;
+            font-size: inherit;
+            font-weight: normal;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline;
+            margin-right: 10px;
+            box-sizing: content-box;
+        }
+        .gen-btn:hover { color: #c0e3a5; background: none; }
         input, select, button { width: 100%; padding: 12px; margin-bottom: 15px; background-color: #162423; border: 1px solid #2a4040; color: #9cd1d1; font-family: inherit; box-sizing: border-box; }
         button { background-color: #9cd1d1; color: #162423; font-weight: bold; cursor: pointer; border: none; }
         button:hover { background-color: #b0e0e0; }
@@ -59,6 +77,22 @@
         </div>
     </div>
     <div class="container">
+        {% if generated_backup_codes %}
+        <div class="panel full-width" style="border-color: #f0c674; background-color: #1e261f;">
+            <h3 style="color: #f0c674;">[SECURITY ALERT] NEW EMERGENCY BACKUP CODES GENERATED</h3>
+            <p style="font-size: 0.9em; margin-bottom: 15px; color: #9cd1d1;">
+                Backup codes successfully provisioned for <strong style="color: #fff;">{{ generated_backup_codes.email }}</strong>. 
+                Write these down or copy them now. They will <strong>not</strong> be shown again.
+            </p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-bottom: 15px;">
+                {% for code in generated_backup_codes.codes %}
+                <div style="background-color: #162423; border: 1px solid #2a4040; padding: 10px; border-radius: 4px; color: #fff; font-weight: bold; text-align: center; letter-spacing: 1px;">
+                    {{ code }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
         <div class="panel" style="flex: 2;">
             <h3>Active Directory</h3>
             <table>
@@ -81,6 +115,15 @@
                         {% set can_modify = (session.role == 'Superadmin' and (data.role != 'Superadmin' or email == session.email)) or (session.role == 'Admin' and (email == session.email or data.role == 'Standard')) %}
                         {% if can_modify %}
                             <a href="/edit/{{ email }}" class="edit-btn">[Modify]</a>
+                            
+                            {% set can_gen_backup = (data.role != 'Superadmin') and ((session.role == 'Admin' and data.role == 'Standard') or (session.role == 'Superadmin' and data.role in ['Admin', 'Standard'])) %}
+                            {% if can_gen_backup %}
+                            <form action="/admin/generate-backup-codes/{{ email }}" method="POST" style="display:inline; margin:0; padding:0;">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="gen-btn">[Gen Codes]</button>
+                            </form>
+                            {% endif %}
+                            
                             {% if data.role != 'Superadmin' and email != session.email %}
                                 <a href="/delete/{{ email }}" class="delete-btn">[Drop]</a>
                             {% endif %}

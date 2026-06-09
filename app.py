@@ -58,14 +58,14 @@ def login():
             session['pending_otp'] = otp
             if role == 'Superadmin':
                 session['delivery_method'] = "SECURE CONSOLE TERMINAL"
-                print(f"\n{'='*40}\n[ROOT SECURITY ALERT] 2FA OTP for {email}: {otp}\n{'='*40}\n")
+                print(f"\n{'='*40}\n[ROOT SECURITY ALERT] 2FA OTP for {email}: {otp}\n{'='*40}\n", flush=True)
                 core_logic.log_security_event(email, "AUTH_PHASE_1", "SUCCESS", "OTP routed to Root Console.")
             else:
                 session['delivery_method'] = "REGISTERED EMAIL ADDRESS"
                 success, msg = core_logic.send_email_otp(email, otp)
                 if success: core_logic.log_security_event(email, "AUTH_PHASE_1", "SUCCESS", "OTP dispatched via SMTP.")
                 else:
-                    print(f"\n[SMTP FAILED - FALLBACK] OTP for {email}: {otp}\n")
+                    print(f"\n[SMTP FAILED - FALLBACK] OTP for {email}: {otp}\n", flush=True)
                     core_logic.log_security_event(email, "SMTP_ERROR", "WARNING", f"Email failed: {msg}")
             return redirect(url_for('verify_2fa'))
         else:
@@ -176,7 +176,8 @@ def admin():
         success, response_msg = core_logic.add_user(new_email, new_password, new_role)
         if success: core_logic.log_security_event(session['email'], "PROVISION", "SUCCESS", f"Created: {request.form['new_email']}")
         msg, msg_color = response_msg, ("#9cd1d1" if success else "#eb8282")
-    return render_template('admin.html', users=core_logic.get_all_users(), logs=core_logic.get_audit_logs(), msg=msg, msg_color=msg_color)
+    generated_backup_codes = session.pop('generated_backup_codes', None)
+    return render_template('admin.html', users=core_logic.get_all_users(), logs=core_logic.get_audit_logs(), msg=msg, msg_color=msg_color, generated_backup_codes=generated_backup_codes)
 
 @app.route('/edit/<target>', methods=['GET', 'POST'])
 def edit(target):
@@ -226,6 +227,51 @@ def delete(target):
     core_logic.delete_user(target)
     core_logic.log_security_event(session['email'], "DROP", "SUCCESS", f"Terminated: {target}")
     return redirect(url_for('admin'))
+
+@app.route('/admin/generate-backup-codes/<target>', methods=['POST'])
+def generate_backup_codes_route(target):
+    if session.get('role') not in ['Admin', 'Superadmin']: 
+        return redirect(url_for('portal'))
+    
+    db = core_logic.get_all_users()
+    if target not in db: 
+        return redirect(url_for('admin'))
+        
+    target_role = db[target].get('role')
+    
+    # Enforce access controls:
+    # 1. No backup codes for Superadmin
+    if target_role == 'Superadmin':
+        return redirect(url_for('admin'))
+        
+    # 2. Admin can only generate for Standard
+    if session['role'] == 'Admin' and target_role != 'Standard':
+        return redirect(url_for('admin'))
+        
+    # 3. Superadmin can generate for Admin and Standard
+    if session['role'] == 'Superadmin' and target_role not in ['Admin', 'Standard']:
+        return redirect(url_for('admin'))
+        
+    # Generate new backup codes
+    backup_codes = core_logic.generate_backup_codes(10)
+    db[target]['backup_codes'] = core_logic.hash_backup_codes(backup_codes)
+    db[target]['backup_codes_used'] = []
+    core_logic.save_db(db)
+    
+    # Send email
+    core_logic.send_new_backup_codes_email(target, backup_codes)
+    
+    # Log event
+    core_logic.log_security_event(session['email'], "BACKUP_CODES_GEN", "SUCCESS", f"Regenerated backup codes for {target}")
+    
+    # Store plain-text backup codes in session to display once
+    session['generated_backup_codes'] = {
+        'email': target,
+        'codes': backup_codes
+    }
+    
+    return redirect(url_for('admin'))
+
 
 @app.route('/portal', methods=['GET', 'POST'])
 @limiter.limit("100 per minute")

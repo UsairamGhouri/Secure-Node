@@ -36,10 +36,12 @@
         <h2>2FA REQUIRED</h2>
         <p>A One-Time Password has been transmitted to your:<br><strong style="color: #f0c674;">{{ delivery_method }}</strong></p>
 
+        {% if session.get('pending_role') != 'Superadmin' %}
         <div class="tabs">
             <button type="button" class="tab-btn active" onclick="switchTab('otp')">OTP</button>
             <button type="button" class="tab-btn" onclick="switchTab('backup')">BACKUP CODE</button>
         </div>
+        {% endif %}
 
         <div id="otp" class="tab-content active">
             <form method="POST">

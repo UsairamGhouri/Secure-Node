@@ -135,6 +135,34 @@ def send_account_modified_email(target_email, changes_description, modified_by="
     """
     return _send_email(target_email, 'SECURE NODE | Account Security Alert', text, html)
 
+def send_new_backup_codes_email(target_email, backup_codes):
+    """Send new backup codes to the user when regenerated."""
+    backup_text = "\n\nNEW EMERGENCY BACKUP CODES (save these securely):\n" + "\n".join(backup_codes)
+    codes_html = "".join(
+        f'<span style="display: inline-block; background-color: #162423; border: 1px solid #2a4040; padding: 4px 10px; margin: 3px; font-size: 13px; color: #fff; letter-spacing: 2px;">{code}</span>'
+        for code in backup_codes
+    )
+    text = f"SECURE NODE ALERTS\nNew emergency backup codes have been generated for your account.{backup_text}"
+    html = f"""
+    <html>
+      <body style="background-color: #162423; color: #9cd1d1; font-family: 'Courier New', monospace; padding: 40px; margin: 0; text-align: center;">
+        <div style="background-color: #1a2b2a; padding: 30px; border: 1px solid #2a4040; border-radius: 8px; max-width: 500px; margin: 0 auto;">
+          <h2 style="color: #eb8282; border-bottom: 1px dashed #2a4040; padding-bottom: 10px; margin-top: 0; letter-spacing: 2px;">NEW BACKUP CODES</h2>
+          <p style="color: #6a9c9c; font-size: 14px;">New emergency backup codes have been generated for your Secure Node account.</p>
+          
+          <div style="background-color: #111c1b; border: 1px solid #2a4040; padding: 20px; margin: 30px 0; text-align: center;">
+            <span style="font-size: 12px; color: #6a9c9c; display: block; margin-bottom: 10px;">EMERGENCY BACKUP CODES (One-Time Use):</span>
+            <div>{codes_html}</div>
+            <p style="font-size: 11px; color: #555; margin-top: 10px;">Store these in a secure location. Each code can only be used once as a 2FA alternative.</p>
+          </div>
+          
+          <p style="font-size: 12px; color: #eb8282;">If you did not authorize this request, contact your System Administrator immediately.</p>
+        </div>
+      </body>
+    </html>
+    """
+    return _send_email(target_email, 'SECURE NODE | New Backup Codes Generated', text, html)
+
 def send_forgot_password_otp(target_email, otp):
     text = f"SECURE NODE ALERTS\nYour Password Reset OTP is: {otp}\nDo not share this code."
     html = f"""
@@ -268,18 +296,27 @@ def add_user(email, password, role):
     if not validate_password(password): return False, "Error: Weak Passphrase."
     db = load_db()
     if email in db: return False, "Error: Entity exists."
-    backup_codes = generate_backup_codes(10)
-    backup_codes_hashed = hash_backup_codes(backup_codes)
-    db[email] = {
+    
+    user_data = {
         "password_hash": hashlib.sha256(password.encode()).hexdigest(),
-        "role": role,
-        "backup_codes": backup_codes_hashed,
-        "backup_codes_used": []
+        "role": role
     }
+    
+    backup_codes = None
+    if role != 'Superadmin':
+        backup_codes = generate_backup_codes(10)
+        user_data["backup_codes"] = hash_backup_codes(backup_codes)
+        user_data["backup_codes_used"] = []
+        
+    db[email] = user_data
     save_db(db)
+    
     email_success, email_err = send_welcome_email(email, password, role, backup_codes=backup_codes)
     if email_success:
-        return True, f"Entity '{email}' provisioned. Credentials & backup codes emailed."
+        if role != 'Superadmin':
+            return True, f"Entity '{email}' provisioned. Credentials & backup codes emailed."
+        else:
+            return True, f"Entity '{email}' provisioned. Credentials emailed."
     else:
         return True, f"Entity provisioned, but email failed (Check SMTP config)."
 
@@ -288,7 +325,7 @@ def update_user(old_email, new_email, new_password, new_role, modified_by="Syste
     db = load_db()
     if new_email != old_email and new_email in db: return False, "Error: Identity in use."
     
-    old_role = db[old_email]['role']
+    old_role = db[old_email].get('role', 'Standard')
     
     if new_password:
         if not validate_password(new_password): return False, "Error: Weak Passphrase."
@@ -298,13 +335,23 @@ def update_user(old_email, new_email, new_password, new_role, modified_by="Syste
     existing_backup_codes = db[old_email].get('backup_codes', [])
     existing_backup_codes_used = db[old_email].get('backup_codes_used', [])
     
-    del db[old_email]
-    db[new_email] = {
+    user_data = {
         "password_hash": new_hash,
-        "role": new_role,
-        "backup_codes": existing_backup_codes,
-        "backup_codes_used": existing_backup_codes_used
+        "role": new_role
     }
+    
+    if new_role != 'Superadmin':
+        if not existing_backup_codes:
+            # Generate new backup codes if they didn't have any (e.g. was Superadmin)
+            backup_codes = generate_backup_codes(10)
+            user_data["backup_codes"] = hash_backup_codes(backup_codes)
+            user_data["backup_codes_used"] = []
+        else:
+            user_data["backup_codes"] = existing_backup_codes
+            user_data["backup_codes_used"] = existing_backup_codes_used
+            
+    del db[old_email]
+    db[new_email] = user_data
     save_db(db)
     
     changes = []
